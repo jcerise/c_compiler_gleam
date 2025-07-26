@@ -33,11 +33,23 @@ fn create_output_file(path: String) {
 
   let new_path = filepath.join(dir, name_without_ext)
 
+  let _ = simplifile.copy_file(path, new_path)
   io.println("Executable written to " <> new_path)
-  simplifile.copy_file(path, new_path)
 }
 
-pub fn driver() -> glint.Command(Result(Nil, simplifile.FileError)) {
+fn run_lexer() {
+  io.println("Running lexer...")
+}
+
+fn run_parser() {
+  io.println("Running parser...")
+}
+
+fn run_codegen() {
+  io.println("Running codegen...")
+}
+
+pub fn driver() -> glint.Command(Nil) {
   use <- glint.command_help("Shiny CC 'C' compiler")
   use <- glint.unnamed_args(glint.MinArgs(1))
   use lexer <- glint.flag(lex_flag())
@@ -52,14 +64,23 @@ pub fn driver() -> glint.Command(Result(Nil, simplifile.FileError)) {
   io.println("Shiny CC Compiler")
 
   case lexer, parse, codegen {
-    True, _, _ -> "Running the lexer"
-    False, True, _ -> "Running the lexer and parser"
-    False, False, True -> "Running the lexer, parser, and codegen"
-    False, False, False -> "Compiling..."
+    True, _, _ -> {
+      run_lexer()
+    }
+    False, True, _ -> {
+      run_lexer()
+      run_parser()
+    }
+    False, False, True -> {
+      run_lexer()
+      run_parser()
+      run_codegen()
+    }
+    False, False, False -> {
+      io.println("Compiling...")
+      create_output_file(input_path)
+    }
   }
-  |> io.println
-
-  create_output_file(input_path)
 }
 
 pub fn main() {

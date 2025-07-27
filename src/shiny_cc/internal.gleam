@@ -5,14 +5,14 @@ import simplifile
 
 pub type CompilerOperations {
   CompilerOperations(
-    run_lexer: fn() -> Result(Nil, String),
-    run_parser: fn() -> Result(Nil, String),
-    run_codegen: fn() -> Result(Nil, String),
-    create_output_file: fn(String) -> Result(Nil, String),
+    run_lexer: fn() -> Result(String, String),
+    run_parser: fn() -> Result(String, String),
+    run_codegen: fn() -> Result(String, String),
+    create_output_file: fn(String) -> Result(String, String),
   )
 }
 
-pub fn create_output_file(path: String) -> Result(Nil, String) {
+pub fn create_output_file(path: String) -> Result(String, String) {
   let dir = filepath.directory_name(path)
   let base_name = filepath.base_name(path)
   let name_without_ext = filepath.strip_extension(base_name)
@@ -20,7 +20,7 @@ pub fn create_output_file(path: String) -> Result(Nil, String) {
   let new_path = filepath.join(dir, name_without_ext)
 
   let _ = simplifile.copy_file(path, new_path)
-  Ok(io.println("Executable written to " <> new_path))
+  Ok("Executable written to " <> new_path)
 }
 
 pub fn compile_with_options(

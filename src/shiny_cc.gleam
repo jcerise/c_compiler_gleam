@@ -25,16 +25,19 @@ fn codegen_flag() -> glint.Flag(Bool) {
   )
 }
 
-fn run_lexer() -> Result(Nil, String) {
-  Ok(io.println("Running lexer..."))
+fn run_lexer() -> Result(String, String) {
+  io.println("Running lexer...")
+  Ok("Lexer ran")
 }
 
-fn run_parser() -> Result(Nil, String) {
-  Ok(io.println("Running parser..."))
+fn run_parser() -> Result(String, String) {
+  io.println("Running parser...")
+  Ok("Parser ran")
 }
 
-fn run_codegen() -> Result(Nil, String) {
-  Ok(io.println("Running codegen..."))
+fn run_codegen() -> Result(String, String) {
+  io.println("Running codegen...")
+  Ok("Codegen ran")
 }
 
 fn set_compiler_operations() -> internal.CompilerOperations {
@@ -46,7 +49,7 @@ fn set_compiler_operations() -> internal.CompilerOperations {
   )
 }
 
-pub fn driver() -> glint.Command(Result(Nil, String)) {
+pub fn driver() -> glint.Command(Result(String, String)) {
   use <- glint.command_help("Shiny CC 'C' compiler")
   use <- glint.unnamed_args(glint.MinArgs(1))
   use lexer <- glint.flag(lex_flag())
@@ -68,7 +71,8 @@ pub fn driver() -> glint.Command(Result(Nil, String)) {
       codegen,
       set_compiler_operations(),
     )
-  Ok(io.println("Completed"))
+  io.println("Completed")
+  Ok("Completed")
 }
 
 pub fn main() {

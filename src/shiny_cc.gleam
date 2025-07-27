@@ -1,8 +1,7 @@
 import argv
-import filepath
 import gleam/io
 import glint
-import simplifile
+import shiny_cc/internal
 
 fn lex_flag() -> glint.Flag(Bool) {
   glint.bool_flag("lexer")
@@ -26,30 +25,28 @@ fn codegen_flag() -> glint.Flag(Bool) {
   )
 }
 
-fn create_output_file(path: String) {
-  let dir = filepath.directory_name(path)
-  let base_name = filepath.base_name(path)
-  let name_without_ext = filepath.strip_extension(base_name)
-
-  let new_path = filepath.join(dir, name_without_ext)
-
-  let _ = simplifile.copy_file(path, new_path)
-  io.println("Executable written to " <> new_path)
+fn run_lexer() -> Result(Nil, String) {
+  Ok(io.println("Running lexer..."))
 }
 
-fn run_lexer() {
-  io.println("Running lexer...")
+fn run_parser() -> Result(Nil, String) {
+  Ok(io.println("Running parser..."))
 }
 
-fn run_parser() {
-  io.println("Running parser...")
+fn run_codegen() -> Result(Nil, String) {
+  Ok(io.println("Running codegen..."))
 }
 
-fn run_codegen() {
-  io.println("Running codegen...")
+fn set_compiler_operations() -> internal.CompilerOperations {
+  internal.CompilerOperations(
+    run_lexer: run_lexer,
+    run_parser: run_parser,
+    run_codegen: run_codegen,
+    create_output_file: internal.create_output_file,
+  )
 }
 
-pub fn driver() -> glint.Command(Nil) {
+pub fn driver() -> glint.Command(Result(Nil, String)) {
   use <- glint.command_help("Shiny CC 'C' compiler")
   use <- glint.unnamed_args(glint.MinArgs(1))
   use lexer <- glint.flag(lex_flag())
@@ -63,24 +60,15 @@ pub fn driver() -> glint.Command(Nil) {
   let assert Ok(codegen) = codegen(flags)
   io.println("Shiny CC Compiler")
 
-  case lexer, parse, codegen {
-    True, _, _ -> {
-      run_lexer()
-    }
-    False, True, _ -> {
-      run_lexer()
-      run_parser()
-    }
-    False, False, True -> {
-      run_lexer()
-      run_parser()
-      run_codegen()
-    }
-    False, False, False -> {
-      io.println("Compiling...")
-      create_output_file(input_path)
-    }
-  }
+  let _ =
+    internal.compile_with_options(
+      input_path,
+      lexer,
+      parse,
+      codegen,
+      set_compiler_operations(),
+    )
+  Ok(io.println("Completed"))
 }
 
 pub fn main() {

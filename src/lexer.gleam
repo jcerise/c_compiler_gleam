@@ -1,3 +1,4 @@
+import gleam/io
 import gleam/list
 import gleam/result
 import gleam/string
@@ -24,6 +25,34 @@ pub type Token {
 
 pub type Lexer {
   Lexer(source: String, position: Int, line: Int, column: Int)
+}
+
+pub fn token_to_string(token: Token) -> String {
+  case token {
+    Identifier(name) -> "Identifier(" <> name <> ")"
+    Number(value) -> "Number(" <> value <> ")"
+    String(value) -> "String(" <> value <> ")"
+    KeywordReturn -> "KeywordReturn"
+    KeywordInt -> "KeywordInt"
+    KeywordVoid -> "KeywordVoid"
+    LParen -> "LParen"
+    RParen -> "RParen"
+    LBrace -> "LBrace"
+    RBrace -> "RBrace"
+    Semicolon -> "Semicolon"
+    Plus -> "Plus"
+    Minus -> "Minus"
+    Assign -> "Assign"
+    EOF -> "EOF"
+    Error(msg) -> "Error(" <> msg <> ")"
+  }
+}
+
+pub fn print_tokens(tokens: List(Token)) {
+  tokens
+  |> list.map(token_to_string)
+  |> string.join("\n")
+  |> io.println
 }
 
 pub fn tokenize(filename: String) -> Result(List(Token), String) {
@@ -151,18 +180,18 @@ fn advance(lexer: Lexer) -> Lexer {
   }
 }
 
-pub fn is_digit(char: String) -> Bool {
+fn is_digit(char: String) -> Bool {
   string.contains("0123456789", char)
 }
 
-pub fn is_alpha(char: String) -> Bool {
+fn is_alpha(char: String) -> Bool {
   string.contains("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", char)
 }
 
-pub fn is_alphanumeric(char: String) -> Bool {
+fn is_alphanumeric(char: String) -> Bool {
   { is_alpha(char) || is_digit(char) }
 }
 
-pub fn is_whitespace(char: String) -> Bool {
+fn is_whitespace(char: String) -> Bool {
   { char == " " || char == "\t" || char == "\n" || char == "\r" }
 }

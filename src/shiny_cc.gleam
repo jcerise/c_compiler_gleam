@@ -1,6 +1,7 @@
 import argv
 import gleam/io
 import glint
+import lexer
 import shiny_cc/internal
 
 fn lex_flag() -> glint.Flag(Bool) {
@@ -25,9 +26,15 @@ fn codegen_flag() -> glint.Flag(Bool) {
   )
 }
 
-fn run_lexer() -> Result(String, String) {
+fn run_lexer(filename: String) -> Result(String, String) {
   io.println("Running lexer...")
-  Ok("Lexer ran")
+  case lexer.tokenize(filename) {
+    Ok(content) -> {
+      lexer.print_tokens(content)
+      Ok("")
+    }
+    Error(_) -> Error("")
+  }
 }
 
 fn run_parser() -> Result(String, String) {

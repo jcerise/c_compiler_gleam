@@ -4,7 +4,7 @@ import shiny_cc/internal
 
 pub fn mock_compiler_operations() -> internal.CompilerOperations {
   internal.CompilerOperations(
-    run_lexer: fn() { Ok("Lexer ran") },
+    run_lexer: fn(_test) { Ok("Lexer ran") },
     run_parser: fn() { Ok("Parser ran") },
     run_codegen: fn() { Ok("Codegen ran") },
     create_output_file: fn(_path) { Ok("Output created") },

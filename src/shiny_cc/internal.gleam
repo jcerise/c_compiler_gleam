@@ -5,7 +5,7 @@ import simplifile
 
 pub type CompilerOperations {
   CompilerOperations(
-    run_lexer: fn() -> Result(String, String),
+    run_lexer: fn(String) -> Result(String, String),
     run_parser: fn() -> Result(String, String),
     run_codegen: fn() -> Result(String, String),
     create_output_file: fn(String) -> Result(String, String),
@@ -31,13 +31,13 @@ pub fn compile_with_options(
   ops: CompilerOperations,
 ) {
   case lexer, parse, codegen {
-    True, _, _ -> ops.run_lexer()
+    True, _, _ -> ops.run_lexer(input_path)
     False, True, _ -> {
-      use _ <- result.try(ops.run_lexer())
+      use _ <- result.try(ops.run_lexer(input_path))
       ops.run_parser()
     }
     False, False, True -> {
-      use _ <- result.try(ops.run_lexer())
+      use _ <- result.try(ops.run_lexer(input_path))
       use _ <- result.try(ops.run_parser())
       ops.run_codegen()
     }
